@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Nov 15 14:24:11 2023
-
-@author: matth
-"""
 import pandas as pd
 import yfinance as yf
 import torch
@@ -20,29 +14,23 @@ class StockDataset(Dataset):
         self.features = torch.tensor(self.data[['WinLoss']].values, dtype=torch.float32)
         self.labels = torch.tensor(self.data['Open'].values, dtype=torch.float32)
 
+    def check_for_nans(self):
+        # Check for NaN values in features and labels
+        nan_features = torch.isnan(self.features).any()
+        nan_labels = torch.isnan(self.labels).any()
+
+        if nan_labels:
+            raise ValueError("Dataset contains NaN labels. Please handle missing data before creating the dataset.")
+        if nan_features:
+            raise ValueError("Dataset contains NaN features. Please handle missing data before creating the dataset.")
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
         return self.features[idx], self.labels[idx]
 
-# Function to fill missing open prices using historical data with forward fill
-# def fill_open_prices(dataset, historical_data):
-#     for i in range(len(dataset)):
-#         if torch.isnan(dataset.labels[i]):
-#             date = dataset.data.index[i]
-            
-#             # Check if the date is not NaT before formatting
-#             if pd.notna(date):
-#                 date_str = date.strftime('%Y-%m-%d')
-#                 if date_str in historical_data.index:
-#                     dataset.labels[i] = historical_data.loc[date_str, 'Open']
-#                 else:
-#                     # Forward fill missing values
-#                     dataset.labels[i] = dataset.labels[i - 1]
-
 # Load your dataset
-csv_file_path = 'train_sports.csv'
+csv_file_path = 'train_sports_sum.csv'
 dataset = StockDataset(csv_file_path)
 
 # Download historical data for the entire date range
@@ -52,34 +40,38 @@ historical_data = yf.download('^GSPC', start=start_date, end=end_date)
 
 # Fill missing open prices using historical data with forward fill
 # fill_open_prices(dataset, historical_data)
+
+for i in range(len(dataset)):
+    if torch.isnan(dataset.features[i]):
+        print(i)
+
+
+dataset.labels[0] = historical_data.loc['2018-01-02', 'Open']
+for i in range(len(dataset)):
+    if torch.isnan(dataset.labels[i]):
+        date = dataset.data.index[i]
+        
+       
+        date_str = date.strftime('%Y-%m-%d')
+        if date_str in historical_data.index:
+            dataset.labels[i] = historical_data.loc[date_str, 'Open']
+                # print(dataset.labels[i])
+        else:
+                # Forward fill missing values
+            dataset.labels[i] = dataset.labels[i - 1]
+                # print(dataset.labels[i])
+
 for i in range(len(dataset)):
     if torch.isnan(dataset.labels[i]):
         date = dataset.data.index[i]
         
         # Check if the date is not NaT before formatting
-        if pd.notna(date):
-            if i == 0:
-                dataset.labels[i] = historical_data.loc['2018-01-02', 'Open']
-                # print(dataset.labels[i])
-            date_str = date.strftime('%Y-%m-%d')
-            if date_str in historical_data.index:
-                dataset.labels[i] = historical_data.loc[date_str, 'Open']
-                # print(dataset.labels[i])
-            else:
-                # Forward fill missing values
-                dataset.labels[i] = dataset.labels[i - 1]
-                # print(dataset.labels[i])
+
+        date_str = date.strftime('%Y-%m-%d')
+        print(f"NaN label at index {i}, date: {date_str}")
                 
-# Calculate mean and standard deviation of your input features
-mean = torch.mean(dataset.features, dim=0)
-std = torch.std(dataset.features, dim=0)
+dataset.check_for_nans()
 
-# Normalize the input features
-normalized_features = (dataset.features - mean) / std
-
-# Replace the original features with the normalized features
-dataset.features = normalized_features
-# Load your dataset and continue with training and prediction code as before
 dataloader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
 
 # Define your neural network model
@@ -92,7 +84,7 @@ class StockPredictor(nn.Module):
         return self.fc(x)
 
 # Hyperparameters
-learning_rate = .0001
+learning_rate = .01
 num_epochs = 1
 
 # Initialize the model and optimizer
@@ -104,11 +96,12 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 for epoch in range(num_epochs):
     for inputs, labels in dataloader:
         # Forward pass
+        optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels.unsqueeze(1))
 
         # Backward and optimize
-        optimizer.zero_grad()
+        
         loss.backward()
         optimizer.step()
 
@@ -117,7 +110,7 @@ for epoch in range(num_epochs):
 
 
 # Load your test dataset
-csv_test_file_path = 'test_sports.csv'
+csv_test_file_path = 'test_sports_sum.csv'
 test_dataset = StockDataset(csv_test_file_path)
 
 # Download historical data for the entire test date range
@@ -126,32 +119,32 @@ test_end_date = test_dataset.data.index.max().strftime('%Y-%m-%d')
 historical_test_data = yf.download('^GSPC', start=test_start_date, end=test_end_date)
 
 # Fill missing open prices for the test dataset using historical data with forward fill
+test_dataset.labels[0] = historical_test_data.loc['2023-01-03', 'Open']
+test_dataset.labels[1] = historical_test_data.loc['2023-01-03', 'Open']
+for i in range(len(test_dataset)):
+    if torch.isnan(test_dataset.labels[i]):
+        date = test_dataset.data.index[i]
+        
+        
+        date_str = date.strftime('%Y-%m-%d')
+        if date_str in historical_test_data.index:
+            test_dataset.labels[i] = historical_test_data.loc[date_str, 'Open']
+        else:
+                # Forward fill missing values
+            test_dataset.labels[i] = test_dataset.labels[i - 1]
+
 for i in range(len(test_dataset)):
     if torch.isnan(test_dataset.labels[i]):
         date = test_dataset.data.index[i]
         
         # Check if the date is not NaT before formatting
-        if pd.notna(date):
-            if i == 0:
-                test_dataset.labels[i] = historical_test_data.loc['2023-01-03', 'Open']
-            date_str = date.strftime('%Y-%m-%d')
-            if date_str in historical_test_data.index:
-                test_dataset.labels[i] = historical_test_data.loc[date_str, 'Open']
-            else:
-                # Forward fill missing values
-                test_dataset.labels[i] = test_dataset.labels[i - 1]
-                
-                
-labels = test_dataset.labels.numpy()
-labels_tensor = torch.from_numpy(labels)
-for i in range(1, len(labels)):
-    if torch.isnan(labels_tensor[i]):
-        j = i - 1
-        while torch.isnan(labels_tensor[j]):
-            j -= 1
-        labels_tensor[i] = labels_tensor[j]
 
-test_dataset.labels = labels_tensor
+        date_str = date.strftime('%Y-%m-%d')
+        print(f"NaN label at index {i}, date: {date_str}")
+                
+dataset.check_for_nans()
+                
+
 
 # Continue with the evaluation
 test_dataloader = DataLoader(test_dataset, batch_size=len(test_dataset), shuffle=False)
@@ -178,6 +171,8 @@ with torch.no_grad():
 # Print test loss
 print(f'Test Loss: {test_loss.item():.4f}')
 
+# for i in range(len(test_outputs)):
+#     print(test_outputs[i])
 # Visualize the actual and predicted stock prices
 plt.figure(figsize=(12, 6))
 
@@ -192,6 +187,20 @@ plt.xlabel('Date')
 plt.ylabel('Stock Price')
 plt.title('Actual vs Predicted Stock Prices')
 plt.legend()
+
+# Show the plot
+plt.show()
+
+plt.plot(test_dataset.data.index, test_outputs.numpy(), label='Predicted Stock Price', color='orange')
+
+# Set labels and title
+plt.xlabel('Date')
+plt.ylabel('Stock Price')
+plt.title('Predicted Stock Prices')
+plt.legend()
+
+# Show the plot
+plt.show()
 
 # Show the plot
 plt.show()
