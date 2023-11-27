@@ -84,7 +84,7 @@ class StockPredictor(nn.Module):
         return self.fc(x)
 
 # Hyperparameters
-learning_rate = .01
+learning_rate = .001
 num_epochs = 1
 
 # Initialize the model and optimizer
