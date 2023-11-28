@@ -1,5 +1,6 @@
 # Stocks-and-Sports
-# NEED TO ADD SOURCES, REFERENCES, and LICENSE (add forward fill and MSE loss)
+
+## NEED TO ADD SOURCES, REFERENCES, and LICENSE (add forward fill and MSE loss)
 
 ## Before Using
 
