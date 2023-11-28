@@ -215,7 +215,7 @@ plt.legend()
 # Show the plot
 plt.show()
 
-plt.plot(test_dataset.data.index, test_outputs.numpy(), label='Predicted Stock Price', color='orange')
+plt.plot(test_dataset.data.index, test_outputs_final, label='Predicted Stock Price', color='orange')
 
 # Set labels and title
 plt.xlabel('Date')
