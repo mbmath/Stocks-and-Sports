@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Define your custom dataset
+# Define dataset
 class StockDataset(Dataset):
     def __init__(self, csv_file):
         self.data = pd.read_csv(csv_file, parse_dates=['Date'])
@@ -30,7 +30,7 @@ class StockDataset(Dataset):
     def __getitem__(self, idx):
         return self.features[idx], self.labels[idx]
 
-# Load your dataset
+# Load dataset
 csv_file_path = 'train_sports_sum.csv'
 dataset = StockDataset(csv_file_path)
 
@@ -40,7 +40,6 @@ end_date = dataset.data.index.max().strftime('%Y-%m-%d')
 historical_data = yf.download('^GSPC', start=start_date, end=end_date)
 
 # Fill missing open prices using historical data with forward fill
-# fill_open_prices(dataset, historical_data)
 
 for i in range(len(dataset)):
     if torch.isnan(dataset.features[i]):
@@ -75,7 +74,7 @@ dataset.check_for_nans()
 
 dataloader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
 
-# Define your neural network model
+# Define neural network model
 class StockPredictor(nn.Module):
     def __init__(self, input_size):
         super(StockPredictor, self).__init__()
@@ -110,7 +109,7 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
 
-# Load your test dataset
+# Load test dataset
 csv_test_file_path = 'test_sports_sum.csv'
 test_dataset = StockDataset(csv_test_file_path)
 
@@ -145,9 +144,6 @@ for i in range(len(test_dataset)):
                 
 dataset.check_for_nans()
                 
-
-
-# Continue with the evaluation
 test_dataloader = DataLoader(test_dataset, batch_size=len(test_dataset), shuffle=False)
 
 # Evaluation loop
