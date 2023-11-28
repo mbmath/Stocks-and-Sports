@@ -1,4 +1,5 @@
 # Stocks-and-Sports
+# NEED TO ADD SOURCES, REFERENCES, and LICENSE (add forward fill and MSE loss)
 
 ## Before Using
 
@@ -10,7 +11,7 @@ Either conda install or pip install
 
 ## Objective
 
-This code attempts to find a correlation between the performance of New York based professional sports teams' performance and the perfomance of the stock market (tracked by the S&P 500).
+This code attempts to find a correlation between the performance of New York based professional sports teams' performance and the perfomance of the stock market (tracked by the S&P 500). 
 
 The data on Sports Teams can be found in the csv files in the repository and the stock data is pulled using the yfinance package
 
