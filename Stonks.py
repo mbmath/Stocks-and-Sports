@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Define your custom dataset
 class StockDataset(Dataset):
@@ -46,7 +47,7 @@ for i in range(len(dataset)):
         print(i)
 
 
-dataset.labels[0] = historical_data.loc['2018-01-02', 'Open']
+dataset.labels[0] = historical_data.loc['2018-01-02', 'Close'] - historical_data.loc['2018-01-02', 'Open']
 for i in range(len(dataset)):
     if torch.isnan(dataset.labels[i]):
         date = dataset.data.index[i]
@@ -54,7 +55,7 @@ for i in range(len(dataset)):
        
         date_str = date.strftime('%Y-%m-%d')
         if date_str in historical_data.index:
-            dataset.labels[i] = historical_data.loc[date_str, 'Open']
+             dataset.labels[i] = historical_data.loc[date_str, 'Close'] - historical_data.loc[date_str, 'Open']
                 # print(dataset.labels[i])
         else:
                 # Forward fill missing values
@@ -179,8 +180,31 @@ plt.figure(figsize=(12, 6))
 # Plot actual stock prices
 plt.plot(test_dataset.data.index, test_dataset.labels.numpy(), label='Actual Stock Price', color='blue')
 
+# Output Stock Price instead of Change for Graphing Purposes
+test_outputs = test_outputs.numpy()
+test_outputs = test_outputs.reshape(1, -1)
+start_price_test = test_dataset.labels[0]
+test_outputs_final = [start_price_test]
+for i in range(len(test_outputs)):
+    # for j in test_outputs_final:
+    #     temp_sum = sum(test_outputs_final)
+    
+    # test_outputs_final.append(test_outputs[:, i] + np.sum(test_outputs_final, axis=0))
+    current_prediction = test_outputs[[0, i]]
+    cumulative_sum = np.sum(test_outputs_final) + current_prediction
+    test_outputs_final.append(cumulative_sum)
+    
+test_outputs_final.pop(0)
+test_outputs_final = np.array(test_outputs_final)
+test_outputs_final = test_outputs_final.reshape(317, 2)
+test_outputs_final[:, 1] = test_outputs_final[:, 0]
+
+# Reshape it back to (317, 1)
+test_outputs_final = test_outputs_final[:, 0].reshape(317, 1)
+# ************************************************************************************    
+
 # Plot predicted stock prices
-plt.plot(test_dataset.data.index, test_outputs.numpy(), label='Predicted Stock Price', color='orange')
+plt.plot(test_dataset.data.index, test_outputs_final, label='Predicted Stock Price', color='orange')
 
 # Set labels and title
 plt.xlabel('Date')
@@ -203,6 +227,28 @@ plt.legend()
 plt.show()
 
 # Show the plot
+plt.show()
+
+# Assuming 'WinLoss' and 'Open' are the columns of interest
+df = pd.DataFrame()
+df['Actual'] = test_dataset.labels.numpy()
+df['Predicted'] = test_outputs_final
+
+# Check for missing values in the DataFrame
+if df.isnull().values.any():
+    raise ValueError("DataFrame contains missing values. Please handle missing data before calculating correlations.")
+
+# Calculate the correlation between 'Actual' and 'Predicted'
+correlation = df['Actual'].corr(df['Predicted'])
+
+# Print the correlation
+print(f"Correlation between 'Actual' and 'Predicted': {correlation:.4f}")
+
+# Create a scatter plot
+plt.scatter(df['Actual'], df['Predicted'])
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Actual vs Predicted Scatter Plot')
 plt.show()
 
 
