@@ -10,6 +10,8 @@ The following packages must be installed:
 
 Either conda install or pip install
 
+Simply Run Code to Output Results
+
 ## Objective
 
 This code attempts to find a correlation between the performance of New York based professional sports teams' performance and the perfomance of the stock market (tracked by the S&P 500). 
