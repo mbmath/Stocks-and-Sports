@@ -1,1 +1,5 @@
+## Due to the Undesireable Output from Our Sports Analysis
 
+We created this file using the same machine learning model to depict the output of the model when the two datasets are highly correlated
+
+This demonstration, for the presentation, uses Visa ('V') and Mastercard ('MA') as well as the S&P 500 ('^GSPC') and the NASDAQ ('^NDX')
