@@ -31,7 +31,9 @@ Change the lines of code in lines ___ & ___
 ### Notes on Model:
 Forward Fill:
 
+Since the stock market is closed on weekends and holidays throughout the year while sports are played on these days, we had several holes in our dataset. We accounted for this by forwarded filling stock prices through weekends and holidays
 
 MSE Loss:
 
+Loss is a measure of how accurately the machine learning model is predicting. A model with perfect predictions would have a loss of zero. We used an MSE (Mean Square Error) Loss as we found it to be the appropriate loss function to use for a series of data.
 
