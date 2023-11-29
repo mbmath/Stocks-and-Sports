@@ -27,3 +27,11 @@ The 'test_sports_sum' and 'train_sports_sum' csv files are what we used to train
 Change the lines of code in lines ___ & ___
   
   Note: ^GSPC is the symbol in yfinance for the S&P 500, all other tickers can be directly copied into the text (DO NOT INCLUDE THE '^' if it is a regular stock)
+
+### Notes on Model:
+Forward Fill:
+
+
+MSE Loss:
+
+
