@@ -38,17 +38,17 @@ class StockDataset(Dataset):
         if nan_labels:
             raise ValueError("Dataset contains NaN labels. Please handle missing data before creating the dataset.")
 
-# Load your training dataset (e.g., S&P 500 and Nasdaq) from 1990 until now
+# Load training dataset
 train_dataset_sp500 = StockDataset(ticker= stock_output, start_date='2005-01-01', end_date='2022-12-29')
 train_dataset_nasdaq = StockDataset(ticker= stock_input, start_date='2005-01-01', end_date='2022-12-29')
 
 # Concatenate the training datasets
 train_dataset = torch.utils.data.ConcatDataset([train_dataset_sp500, train_dataset_nasdaq])
 
-# Load your test dataset (e.g., S&P 500) for 2023
+# Load test dataset
 test_dataset_sp500 = StockDataset(ticker= stock_output, start_date='2023-01-01', end_date='2023-11-27')
 
-# Check for NaN values in the datasets
+# Check for NaN values
 train_dataset_sp500.check_for_nans()
 train_dataset_nasdaq.check_for_nans()
 test_dataset_sp500.check_for_nans()
@@ -122,35 +122,21 @@ if np.isnan(actual_values_sp500).any() or np.isnan(predicted_values_sp500).any()
 
 # Plot stock prices for the training dataset
 plt.figure(figsize=(12, 6))
-
-# Plot actual stock prices for S&P 500
 plt.plot(train_dataset_sp500.data.index, train_dataset_sp500.labels.numpy(), label=f"{stock_output} Actual", color='blue')
-
-# Plot actual stock prices for Nasdaq
 plt.plot(train_dataset_nasdaq.data.index, train_dataset_nasdaq.labels.numpy(), label=f"{stock_input} Actual", color='green')
-
-# Set labels and title
 plt.xlabel('Date')
 plt.ylabel('Stock Price')
 plt.title('Actual Stock Prices - Training Dataset')
 plt.legend()
-
-# Show the plot
 plt.show()
 
-# Calculate relative changes in actual values
+# Calculate changes
 actual_changes_sp500 = np.diff(actual_values_sp500)
-
-# Calculate the cumulative sum of relative changes
 actual_cumulative_changes_sp500 = np.cumsum(actual_changes_sp500)
-
-# Calculate relative changes in predicted values
 predicted_changes_sp500 = np.diff(predicted_values_sp500)
-
-# Calculate the cumulative sum of relative changes starting from the same point as the actual values
 predicted_cumulative_changes_sp500 = np.cumsum(predicted_changes_sp500) + actual_values_sp500[0]
 
-# Trim or pad the arrays to have the same length
+# Trim arrays for length
 min_length = min(len(test_dataset_sp500.data.index), len(predicted_cumulative_changes_sp500))
 test_index_trimmed = test_dataset_sp500.data.index[:min_length]
 predicted_trimmed = predicted_cumulative_changes_sp500[:min_length]
@@ -158,18 +144,10 @@ predicted_trimmed = predicted_cumulative_changes_sp500[:min_length]
 
 # Plot stock prices for the test dataset
 plt.figure(figsize=(12, 6))
-
-# Plot actual stock prices
 plt.plot(test_index_trimmed, actual_values_sp500[:min_length], label=f"{stock_output} Actual", color='blue')
-
-# Plot predicted stock prices
 plt.plot(test_index_trimmed, predicted_trimmed, label=f"{stock_output} Predicted", color='orange')
-
-# Set labels and title
 plt.xlabel('Date')
 plt.ylabel('Stock Price')
 plt.title(f"Predicted Stock Prices - Test Dataset ({stock_output})")
 plt.legend()
-
-# Show the plot
 plt.show()
