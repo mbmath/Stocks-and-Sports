@@ -12,7 +12,7 @@ import pandas as pd
 stock_output = 'AAPL'
 stock_input = 'GOOG'
 
-# Define your custom dataset
+# Define custom dataset
 class StockDataset(Dataset):
     def __init__(self, ticker, start_date, end_date):
         # Download historical data for the given ticker and date range
@@ -56,7 +56,7 @@ test_dataset_sp500.check_for_nans()
 # DataLoader for training dataset
 train_dataloader = DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=False)
 
-# Define your neural network model
+# Define neural network model
 class StockPredictor(nn.Module):
     def __init__(self, input_size):
         super(StockPredictor, self).__init__()
