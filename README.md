@@ -12,7 +12,7 @@ Simply Run Code to Output Results
 
 ## Objective
 
-This code attempts to find a correlation between the performance of New York based professional sports teams' performance and the perfomance of the stock market (tracked by the S&P 500). 
+This code attempts to find a correlation between the performance of New York based professional sports teams' performance and the performance of the stock market (tracked by the S&P 500). 
 
 The data on Sports Teams can be found in the csv files in the repository and the stock data is pulled using the yfinance package
 
@@ -23,9 +23,9 @@ It should be noted that we found very little, to no correlation between the two 
 A proof of concept folder is included with a similar machine learning model to ours to demonstrate how outputs would look between two trends with correlating data. We used trained our model on Google's stock price to predict Apple's and our predicted prices ended up being very similar to actual prices.
 
 ### If you want to use any other correlations, csv files of the same format as those in the folder must be created
-The 'test_sports_sum' and 'train_sports_sum' csv files are what we used to train our project. These are the daily wins and losses summed over time. The 'test_sports' and 'train_sports' csv files are the individual daily wins and losses. They can be used in subsitution for the 'sum' files but are not necessary to run the code.
+The 'test_sports_sum' and 'train_sports_sum' csv files are what we used to train our project. These are the daily wins and losses summed over time. The 'test_sports' and 'train_sports' csv files are the individual daily wins and losses. They can be used in substitution for the 'sum' files but are not necessary to run the code.
 
-### To change the Ticker Being Analzyed:
+### To change the Ticker Being Analyzed:
 Change the lines of code in lines 40 & 119
   
   Note: ^GSPC is the symbol in yfinance for the S&P 500, all other tickers can be directly copied into the text (DO NOT INCLUDE THE '^' if it is a regular stock)
