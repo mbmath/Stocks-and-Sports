@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Nov 28 16:40:33 2023
 
-@author: jeremyrubin
-"""
+
 import yfinance as yf
 import torch
 import torch.nn as nn
