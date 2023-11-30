@@ -116,7 +116,7 @@ with torch.no_grad():
 # Print test loss
 print(f'Test Loss: {test_loss.item():.4f}')
 
-# Convert tensors to numpy arrays for easier manipulation
+# Convert tensors to numpy arrays
 actual_values_sp500 = test_dataset_sp500.labels.numpy()
 predicted_values_sp500 = test_outputs.numpy().flatten()
 
@@ -167,7 +167,7 @@ plt.figure(figsize=(12, 6))
 # Plot actual stock prices
 plt.plot(test_index_trimmed, actual_values_sp500[:min_length], label=f"{stock_output} Actual", color='blue')
 
-# Plot manipulated predicted stock prices
+# Plot predicted stock prices
 plt.plot(test_index_trimmed, predicted_trimmed, label=f"{stock_output} Predicted", color='orange')
 
 # Set labels and title
