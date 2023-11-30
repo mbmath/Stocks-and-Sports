@@ -72,7 +72,7 @@ class StockPredictor(nn.Module):
 
 # Hyperparameters
 learning_rate = 0.001
-num_epochs = 10
+num_epochs = 1
 
 # Initialize the model and optimizer
 model = StockPredictor(input_size=1)
@@ -124,12 +124,6 @@ predicted_values_sp500 = test_outputs.numpy().flatten()
 if np.isnan(actual_values_sp500).any() or np.isnan(predicted_values_sp500).any():
     raise ValueError("Arrays contain missing values. Please handle missing data before calculating correlations.")
 
-# Create a scatter plot
-plt.scatter(actual_values_sp500, predicted_values_sp500)
-plt.xlabel('Actual')
-plt.ylabel('Predicted')
-plt.title('Actual vs Predicted Scatter Plot - S&P 500')
-plt.show()
 
 # Plot stock prices for the training dataset
 plt.figure(figsize=(12, 6))
@@ -166,14 +160,8 @@ min_length = min(len(test_dataset_sp500.data.index), len(predicted_cumulative_ch
 test_index_trimmed = test_dataset_sp500.data.index[:min_length]
 predicted_trimmed = predicted_cumulative_changes_sp500[:min_length]
 
-# Calculate the correlation between 'Actual' and 'Predicted'
-correlation_sp500 = np.corrcoef(actual_cumulative_changes_sp500[:min_length], predicted_trimmed)[0, 1]
 
-# Print the correlation
-print(f"Correlation between 'Actual' and 'Predicted': {correlation_sp500:.4f}")
-
-
-# Plot stock prices for the test dataset (S&P 500)
+# Plot stock prices for the test dataset
 plt.figure(figsize=(12, 6))
 
 # Plot actual stock prices
@@ -185,7 +173,7 @@ plt.plot(test_index_trimmed, predicted_trimmed, label=f"{stock_output} Predicted
 # Set labels and title
 plt.xlabel('Date')
 plt.ylabel('Stock Price')
-plt.title(f"Manipulated Predicted Stock Prices - Test Dataset ({stock_output})")
+plt.title(f"Predicted Stock Prices - Test Dataset ({stock_output})")
 plt.legend()
 
 # Show the plot
