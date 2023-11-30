@@ -2,7 +2,6 @@
 import yfinance as yf
 import pandas as pd
 
-# Define the date range
 start_date = '2000-01-01'
 end_date = '2023-11-27'
 
@@ -43,10 +42,8 @@ stocks = [
 ]
 data = yf.download(stocks, start=start_date, end=end_date)['Adj Close']
 
-# correlation matrix
 correlation_matrix = data.corr()
 
-# highest correlation
 max_correlation = correlation_matrix.unstack().sort_values(ascending=False).drop_duplicates().head(2)
 stock1, stock2 = max_correlation.index
 
